@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Viaje</title>
+</head>
+<body>
+    {% include "header.html" %}
+<h2>Formulario de Viaje</h2>
+
+<form id="viajeForm">
+    <label for="ciudad_destino">Ciudad Destino:</label>
+    <input type="text" id="ciudad_destino" name="ciudad_destino" required><br>
+    <button type="button" onclick="abrirVentanaCiudades('ciudad_destino')">Seleccionar Ciudad</button><br>
+
+    <label for="ciudad_origen">Ciudad Origen:</label>
+    <input type="text" id="ciudad_origen" name="ciudad_origen" required><br>
+    <button type="button" onclick="abrirVentanaCiudades('ciudad_origen')">Seleccionar Ciudad</button><br>
+
+    <label for="kilometros">Kilometros:</label>
+    <input type="text" id="kilometros" name="kilometros" required><br>
+
+    <label for="cliente">Codigo Cliente:</label>
+    <input type="text" id="cliente" name="cliente" required><br>
+    <button type="button" onclick="abrirVentanaClientes('cliente')">Seleccionar Cliente</button><br>
+
+    <label for="camion">Camion:</label>
+    <input type="text" id="camion" name="camion" required><br>
+    <button type="button" onclick="abrirVentanaCamion('camion')">Seleccionar Camion</button><br>
+
+    <label for="chofer">Chofer:</label>
+    <input type="text" id="chofer" name="chofer" required><br>
+    <button type="button" onclick="abrirVentanaChofer('chofer')">Seleccionar Chofer</button><br>
+
+    <label for="fecha_salida_estimada">Fecha Salida Estimada:</label>
+    <input type="text" id="fecha_salida_estimada" name="fecha_salida_estimada" required><br>
+
+    <label for="fecha_llegada_estimada">Fecha Llegada Estimada:</label>
+    <input type="text" id="fecha_llegada_estimada" name="fecha_llegada_estimada" required><br>
+
+    <label for="fecha_salida_real">Fecha Salida Real:</label>
+    <input type="text" id="fecha_salida_real" name="fecha_salida_real" required><br>
+
+    <label for="fecha_llegada_real">Fecha Llegada Real:</label>
+    <input type="text" id="fecha_llegada_real" name="fecha_llegada_real" required><br>
+
+    <input type="submit" value="Agregar Viaje">
+</form>
+{% if mensaje %}
+    <p id="mensaje">{{mensaje}}</p>
+{% endif %}
+
+<script>
+    function abrirVentanaCiudades(ciudadCampo) {
+        localStorage.setItem('ciudadCampo', ciudadCampo);
+        window.open('/ciudades', '_blank', 'width=400,height=300,resizable=yes,scrollbars=yes');
+    }
+
+    function abrirVentanaClientes(clienteCampo) {
+        localStorage.setItem('clienteCampo', clienteCampo);
+        window.open('/clientes', '_blank', 'width=400,height=300,resizable=yes,scrollbars=yes');
+    }
+
+    function abrirVentanaCamion(camionCampo) {
+        localStorage.setItem('camionCampo', camionCampo);
+        window.open('/camiones', '_blank', 'width=400,height=300,resizable=yes,scrollbars=yes');
+    }
+
+    function abrirVentanaChofer(choferCampo) {
+        localStorage.setItem('choferCampo', choferCampo);
+        window.open('/choferes', '_blank', 'width=400,height=300,resizable=yes,scrollbars=yes');
+    }
+
+    document.getElementById("viajeForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Evitar el envío del formulario tradicional
+
+        var form = document.getElementById("viajeForm");
+        var formData = new FormData(form);
+        var jsonData = {};
+
+        formData.forEach(function(value, key) {
+            jsonData[key] = value;
+        });
+
+        fetch('/agregar_viaje', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Error en la respuesta del servidor');
+            }
+        })
+        .then(data => {
+            console.log(data); // Imprime el objeto de respuesta en la consola para depuración
+            // Actualizar el mensaje en el HTML
+            var mensajeElement = document.getElementById("mensaje");
+            mensajeElement.innerHTML = data.mensaje;
+
+            // Si el mensaje es "Viaje agregado correctamente", redirigir a la página de camiones
+            if (data.mensaje === "Viaje agregado exitosamente") {
+                setTimeout(function() {
+                    window.location.href = "/viajes";
+                }, 2000); // Esperar 2 segundos antes de redirigir
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Mostrar un mensaje de error en caso de fallo
+            var mensajeElement = document.getElementById("mensaje");
+            mensajeElement.innerHTML = "Hubo un error al procesar la solicitud.";
+        });
+    });
+</script>
+
+</body>
+</html>

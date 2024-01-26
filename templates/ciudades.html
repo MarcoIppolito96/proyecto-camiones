@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciudades</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 0 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #09ff00;
+            border: 1px solid #09ff00;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <h1>Ciudades</h1>
+
+    <div class="button-container">
+        <a href="/agregar_ciudad" class="button">Agregar Ciudad</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Codigo Postal</th>
+                <th>Provincia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ciudad in ciudades %}
+                <tr data-codigociudad="{{ ciudad[0] }}">
+                    <td>{{ ciudad[0] }}</td>
+                    <td>{{ ciudad[1] }}</td>
+                    <td>{{ ciudad[2] }}</td>
+                    <td>{{ ciudad[3] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', function() {
+                var codigoCiudad = this.getAttribute('data-codigociudad');
+                var ciudadCampo = localStorage.getItem('ciudadCampo');
+
+                console.log("Se ha hecho clic en la fila");
+                console.log(ciudadCampo);
+
+                var ciudadElement = window.opener.document.getElementById(ciudadCampo);
+
+                if (ciudadElement) {
+                    ciudadElement.value = codigoCiudad;
+                } else {
+                    console.error("Elemento de ciudad no encontrado en la ventana principal.");
+                }
+
+                window.close();
+            });
+        });
+    </script>
+
+</body>
+</html>

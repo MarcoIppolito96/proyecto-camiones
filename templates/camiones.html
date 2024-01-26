@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camiones</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 0 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #09ff00;
+            border: 1px solid #09ff00;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <h1>Camiones</h1>
+
+    <div class="button-container">
+        <a href="/agregar_camion" class="button">Agregar Camion</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Patente</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Año</th>
+                <th>Tipo Remolque</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for camion in camiones %}
+            <tr data-patentecamion="{{ camion[0] }}">
+                <td>{{ camion[0] }}</td>
+                <td>{{ camion[1] }}</td>
+                <td>{{ camion[2] }}</td>
+                <td>{{ camion[3] }}</td>
+                <td>{{ camion[4] }}</td>
+                <td>
+                    <button class="delete-button" onclick="eliminarCamion('{{ camion[0] }}')">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function eliminarCamion(patente) {
+            // Hacer una solicitud POST para eliminar el chofer
+            fetch(`/camiones/${patente}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Manejar la respuesta del servidor
+                alert(data.mensaje || 'Eliminación exitosa');
+                
+                // Redirigir al usuario a "/choferes" después de aceptar el mensaje
+                window.location.href = "/camiones";
+            })
+            .catch(error => {
+                console.error('Error al eliminar el camion:', error);
+            });
+        }
+        </script> 
+        
+        <script>
+            document.querySelectorAll('tr').forEach(row => {
+                row.addEventListener('click', function() {
+                    var codigoCamion = this.getAttribute('data-patentecamion');
+                    var camionCampo = localStorage.getItem('camionCampo');
+    
+                    console.log("Se ha hecho clic en la fila");
+                    console.log(camionCampo);
+    
+                    var camionElement = window.opener.document.getElementById(camionCampo);
+    
+                    if (camionElement) {
+                        camionElement.value = codigoCamion;
+                    } else {
+                        console.error("Elemento de camion no encontrado en la ventana principal.");
+                    }
+    
+                    window.close();
+                });
+            });
+        </script>
+</body>
+</html>

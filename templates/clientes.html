@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 0 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #09ff00;
+            border: 1px solid #09ff00;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <h1>Clientes</h1>
+
+    <div class="button-container">
+        <a href="/agregar_cliente" class="button">Agregar Cliente</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Razon Social</th>
+                <th>Dni</th>
+                <th>Cuit</th>
+                <th>Direccion</th>
+                <th>Telefono</th>
+                <th>Email</th>
+                <th>Es Empresa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr data-codigocliente="{{ cliente[0] }}">
+                <td>{{ cliente[0] }}</td>
+                <td>{{ cliente[1] }}</td>
+                <td>{{ cliente[2] }}</td>
+                <td>{{ cliente[3] }}</td>
+                <td>{{ cliente[4] }}</td>
+                <td>{{ cliente[5] }}</td>
+                <td>{{ cliente[6] }}</td>
+                <td>{{ cliente[7] }}</td>
+                <td>{{ cliente[8] }}</td>
+                <td>{{ cliente[9] }}</td>
+                <td>
+                    <button class="delete-button" onclick="eliminarCliente('{{ cliente[0] }}')">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        function eliminarCliente(codigo) {
+            // Hacer una solicitud POST para eliminar el chofer
+            fetch(`/clientes/${codigo}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Manejar la respuesta del servidor
+                alert(data.mensaje || 'Eliminación exitosa');
+                
+                // Redirigir al usuario a "/choferes" después de aceptar el mensaje
+                window.location.href = "/clientes";
+            })
+            .catch(error => {
+                console.error('Error al eliminar el cliente:', error);
+            });
+        }
+        </script>
+
+<script>
+    document.querySelectorAll('tr').forEach(row => {
+        row.addEventListener('click', function() {
+            var codigoCliente = this.getAttribute('data-codigocliente');
+            var clienteCampo = localStorage.getItem('clienteCampo');
+
+            console.log("Se ha hecho clic en la fila");
+            console.log(clienteCampo);
+
+            var clienteElement = window.opener.document.getElementById(clienteCampo);
+
+            if (clienteElement) {
+                clienteElement.value = codigoCliente;
+            } else {
+                console.error("Elemento de cliente no encontrado en la ventana principal.");
+            }
+
+            window.close();
+        });
+    });
+</script>
+
+</body>
+</html>

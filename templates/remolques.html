@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remolques</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 0 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #09ff00;
+            border: 1px solid #09ff00;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <h1>Remolques</h1>
+
+    <div class="button-container">
+        <a href="/agregar_remolque" class="button">Agregar Remolque</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for remolque in remolques %}
+                <tr data-codigoremolque="{{ remolque[0] }}">
+                    <td>{{ remolque[0] }}</td>
+                    <td>{{ remolque[1] }}</td>
+                    <td>
+                        <button class="delete-button" onclick="eliminarRemolque('{{ remolque[0] }}')">Eliminar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function eliminarRemolque(id) {
+            // Hacer una solicitud POST para eliminar el chofer
+            fetch(`/remolques/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Manejar la respuesta del servidor
+                alert(data.mensaje || 'Eliminación exitosa');
+                
+                // Redirigir al usuario a "/choferes" después de aceptar el mensaje
+                window.location.href = "/remolques";
+            })
+            .catch(error => {
+                console.error('Error al eliminar el chofer:', error);
+            });
+        }
+        </script>
+
+    <script>
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('click', function() {
+                var codigoRemolque = this.getAttribute('data-codigoremolque');
+                var remolqueCampo = localStorage.getItem('remolqueCampo');
+
+                console.log("Se ha hecho clic en la fila");
+                console.log(remolqueCampo);
+
+                var remolqueElement = window.opener.document.getElementById(remolqueCampo);
+
+                if (remolqueElement) {
+                    remolqueElement.value = codigoRemolque;
+                } else {
+                    console.error("Elemento de remolque  no encontrado en la ventana principal.");
+                }
+
+                window.close();
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!-- header.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            background-color: #1A0928; /* Violeta oscuro más oscuro */
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        nav {
+            background-color: #1A0928; /* Violeta oscuro más oscuro */
+            padding: 10px;
+            text-align: center;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .button, .button2 {
+            padding: 10px 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: white;
+            background-color: #3E1D5A; /* Negro opaco */
+            border: 1px solid #3E1D5A; /* Borde igual al fondo para un aspecto más limpio */
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px; /* Espacio entre botones y contenido siguiente */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>INICIO</h1>
+</header>
+
+<nav>
+    <div class="button-container">
+        <a href="/clientes" class="button">CLIENTES</a>
+        <a href="/choferes" class="button">CHOFERES</a>
+        <a href="/camiones" class="button">CAMIONES</a>
+        <a href="/remolques" class="button">REMOLQUES</a>
+    </div>
+
+    <div class="button-container">
+        <a href="/viajes" class="button2">VIAJES</a>
+    </div>
+</nav>
+
+</body>
+</html>

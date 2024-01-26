@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viajes</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 0 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #09ff00;
+            border: 1px solid #09ff00;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <h1>Viajes</h1>
+
+    <div class="button-container">
+        <a href="/agregar_viaje" class="button">Agregar Viaje</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Ciudad Origen</th>
+                <th>Ciudad Destino</th>
+                <th>Kilometros</th>
+                <th>Cliente</th>
+                <th>Camion</th>
+                <th>Chofer</th>
+                <th>Fecha Salida Estimada</th>
+                <th>Fecha Llegada Estimada</th>
+                <th>Fecha Salida Real</th>
+                <th>Fecha Llegada Real</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for viaje in viajes %}
+            <tr>
+                <td>{{ viaje[0] }}</td>
+                <td>{{ viaje[1] }}</td>
+                <td>{{ viaje[2] }}</td>
+                <td>{{ viaje[3] }}</td>
+                <td>{{ viaje[4] }}</td>
+                <td>{{ viaje[5] }}</td>
+                <td>{{ viaje[6] }}</td>
+                <td>{{ viaje[7] }}</td>
+                <td>{{ viaje[8] }}</td>
+                <td>{{ viaje[9] }}</td>
+                <td>{{ viaje[10] }}</td>
+                <td>
+                    <button class="delete-button" onclick="eliminarViaje('{{ viaje[0] }}')">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        function eliminarViaje(codigo) {
+            // Hacer una solicitud POST para eliminar el chofer
+            fetch(`/viajes/${codigo}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Manejar la respuesta del servidor
+                alert(data.mensaje || 'Eliminación exitosa');
+                
+                // Redirigir al usuario a "/choferes" después de aceptar el mensaje
+                window.location.href = "/viajes";
+            })
+            .catch(error => {
+                console.error('Error al eliminar el viaje:', error);
+            });
+        }
+        </script>
+
+</body>
+</html>

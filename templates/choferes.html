@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choferes</title>
+    <style>
+        body {
+            text-align: center;
+            margin: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 0 15px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #09ff00;
+            border: 1px solid #09ff00;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <h1>Choferes</h1>
+
+    <div class="button-container">
+        <a href="/agregar_chofer" class="button">Agregar Chofer</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Dirección</th>
+                <th>Teléfono Fijo</th>
+                <th>Teléfono Celular</th>
+                <th>Edad</th>
+                <th>Email</th>
+                <th>Registro Automotor</th>
+                <th>Acciones</th> <!-- Nueva columna para el botón de eliminar -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for chofer in choferes %}
+            <tr data-dnichofer="{{ chofer[0] }}">
+                <td>{{ chofer[0] }}</td>
+                <td>{{ chofer[1] }}</td>
+                <td>{{ chofer[2] }}</td>
+                <td>{{ chofer[3] }}</td>
+                <td>{{ chofer[4] }}</td>
+                <td>{{ chofer[5] }}</td>
+                <td>{{ chofer[6] }}</td>
+                <td>{{ chofer[7] }}</td>
+                <td>{{ chofer[8] }}</td>
+                <td>
+                    <button class="delete-button" onclick="eliminarChofer('{{ chofer[0] }}')">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+    function eliminarChofer(dni) {
+        // Hacer una solicitud POST para eliminar el chofer
+        fetch(`/choferes/${dni}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Manejar la respuesta del servidor
+            alert(data.mensaje || 'Eliminación exitosa');
+            
+            // Redirigir al usuario a "/choferes" después de aceptar el mensaje
+            window.location.href = "/choferes";
+        })
+        .catch(error => {
+            console.error('Error al eliminar el chofer:', error);
+        });
+    }
+    </script>
+
+<script>
+    document.querySelectorAll('tr').forEach(row => {
+        row.addEventListener('click', function() {
+            var codigoChofer = this.getAttribute('data-dnichofer');
+            var choferCampo = localStorage.getItem('choferCampo');
+
+            console.log("Se ha hecho clic en la fila");
+            console.log(choferCampo);
+
+            var choferElement = window.opener.document.getElementById(choferCampo);
+
+            if (choferElement) {
+                choferElement.value = codigoChofer;
+            } else {
+                console.error("Elemento de chofer no encontrado en la ventana principal.");
+            }
+
+            window.close();
+        });
+    });
+</script>
+
+</body>
+</html>

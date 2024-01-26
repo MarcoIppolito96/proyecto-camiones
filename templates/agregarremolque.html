@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Remolque</title>
+</head>
+<body>
+    {% include "header.html" %}
+<h2>Formulario de Remolque</h2>
+
+<form id="remolqueForm">
+    <label for="nombre">Descripción:</label>
+    <input type="text" id="nombre" name="nombre" required><br>
+
+    <input type="submit" value="Agregar Remolque">
+</form>
+
+<p id="mensaje"></p>
+
+<script>
+document.getElementById("remolqueForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Evitar el envío del formulario tradicional
+
+    var form = document.getElementById("remolqueForm");
+    var formData = new FormData(form);
+    var jsonData = {};
+
+    formData.forEach(function(value, key) {
+        jsonData[key] = value;
+    });
+
+    fetch('/agregar_remolque', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Error en la respuesta del servidor');
+        }
+    })
+    .then(data => {
+        // Actualizar el mensaje en el HTML
+        var mensajeElement = document.getElementById("mensaje");
+        mensajeElement.innerHTML = data.mensaje;
+
+        // Si el mensaje es "Remolque agregado correctamente", redirigir a la página de remolques
+        if (data.mensaje === "Remolque agregado correctamente") {
+            setTimeout(function() {
+                window.location.href = "/remolques";
+            }, 3000); // Esperar 3 segundos antes de redirigir
+        }
+    })
+    .catch(error => {
+        console.error('Error en la solicitud:', error);
+        console.log('Error details:', error.message, error.response);
+        // Mostrar un mensaje de error en caso de fallo
+        var mensajeElement = document.getElementById("mensaje");
+        mensajeElement.innerHTML = "Hubo un error al procesar la solicitud. Consulta la consola para más detalles.";
+    });
+});
+</script>
+
+</body>
+</html>
