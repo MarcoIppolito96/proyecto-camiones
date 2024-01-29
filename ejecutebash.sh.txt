@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Instalar Python 3.12.1 y pip
+sudo apt-get update
+sudo apt-get install -y python3.12.1 python3-pip
+
+# Crear y activar el entorno virtual
+python3 -m venv env
+source env/bin/activate
+
+# Instalar las dependencias del proyecto desde requirements.txt
+pip install -r requirements.txt
+
+# Ejecutar la aplicación
+uvicorn main:app --port 8000 --reload

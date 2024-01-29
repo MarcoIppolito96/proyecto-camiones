@@ -293,3 +293,7 @@ def eliminar_remolque(id):
 @app.get("/header", response_class=HTMLResponse)
 def header(request: Request):
     return templates.TemplateResponse("header.html", {"request": request})
+
+@app.get("/crear_factura")
+def factura(request: Request):
+    return templates.TemplateResponse("crearfactura.html", {"request": request})
