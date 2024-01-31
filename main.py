@@ -76,6 +76,27 @@ def eliminarCamion(patente):
     except Exception as e:
         print(f"Error al obtener datos de la base de datos: {str(e)}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
+    
+@app.put("/camiones/{patente}")
+def obtener_detalle_camion(patente: str):
+    try:
+        with conn.cursor() as cursor:
+            query = """SELECT patente, marca, modelo, aÑo, tipo_remolque, activo
+                       FROM public.camiones
+                       WHERE patente = %s;"""
+            cursor.execute(query, (patente,))
+            camion = cursor.fetchone()
+
+            if camion:
+                # Retorna los detalles del camión como respuesta JSON
+                return JSONResponse(content={"camion": dict(camion)})
+            else:
+                # Si no se encuentra el camión, retorna una respuesta 404 Not Found
+                raise HTTPException(status_code=404, detail=f"Camión con patente {patente} no encontrado")
+    except Exception as e:
+        print(f"Error al obtener datos de la base de datos: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+
 
 @app.get("/choferes")
 def obtener_choferes(request: Request):

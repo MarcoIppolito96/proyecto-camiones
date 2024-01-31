@@ -68,15 +68,15 @@
         <tbody>
             {% for chofer in choferes %}
             <tr data-dnichofer="{{ chofer[0] }}">
-                <td>{{ chofer[0] }}</td>
-                <td>{{ chofer[1] }}</td>
-                <td>{{ chofer[2] }}</td>
-                <td>{{ chofer[3] }}</td>
-                <td>{{ chofer[4] }}</td>
-                <td>{{ chofer[5] }}</td>
-                <td>{{ chofer[6] }}</td>
-                <td>{{ chofer[7] }}</td>
-                <td>{{ chofer[8] }}</td>
+                <td>{{ chofer[0] if chofer[0] is not none else '-' }}</td>
+                <td>{{ chofer[1] if chofer[1] is not none else '-' }}</td>
+                <td>{{ chofer[2] if chofer[2] is not none else '-' }}</td>
+                <td>{{ chofer[3] if chofer[3] is not none else '-' }}</td>
+                <td>{{ chofer[4] if chofer[4] is not none else '-' }}</td>
+                <td>{{ chofer[5] if chofer[5] is not none else '-' }}</td>
+                <td>{{ chofer[6] if chofer[6] is not none else '-' }}</td>
+                <td>{{ chofer[7] if chofer[7] is not none else '-' }}</td>
+                <td>{{ chofer[8] if chofer[8] is not none else '-' }}</td>
                 <td>
                     <button class="delete-button" onclick="eliminarChofer('{{ chofer[0] }}')">Eliminar</button>
                 </td>

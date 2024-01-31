@@ -31,6 +31,26 @@
 <p id="mensaje"></p>
 
 <script>
+    function getQueryParams() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const params = {};
+    for (const [key, value] of queryParams.entries()) {
+        params[key] = value;
+    }
+    return params;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const queryParams = getQueryParams();
+    // Llenar el formulario con los valores de queryParams
+    document.getElementById('patente').value = queryParams.patente || '';
+    document.getElementById('marca').value = queryParams.marca || '';
+    document.getElementById('modelo').value = queryParams.modelo || '';
+    document.getElementById('año').value = queryParams.año || '';
+    document.getElementById('tipo_remolque').value = queryParams.tipo_remolque || '';
+    document.getElementById('activo').value = queryParams.activo || '';
+});
+
     function abrirVentanaRemolques(clienteCampo) {
         localStorage.setItem('remolqueCampo', clienteCampo);
         window.open('/remolques', '_blank', 'width=400,height=300,resizable=yes,scrollbars=yes');

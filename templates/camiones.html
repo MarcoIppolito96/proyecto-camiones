@@ -69,6 +69,9 @@
                 <td>{{ camion[3] }}</td>
                 <td>{{ camion[4] }}</td>
                 <td>
+                    <button class="modify-button" onclick="modificarCamion('{{ camion[0] }}')">Modificar</button>
+                </td>
+                <td>
                     <button class="delete-button" onclick="eliminarCamion('{{ camion[0] }}')">Eliminar</button>
                 </td>
             </tr>
@@ -77,6 +80,28 @@
     </table>
 
     <script>
+    function modificarCamion(patente) {
+    // Realizar una solicitud PUT para obtener los detalles del camión
+    fetch(`/camiones/${patente}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Construir la URL con parámetros para el formulario de modificación
+        const url = `/agregar_camion?patente=${data.camion.patente}&marca=${data.camion.marca}&modelo=${data.camion.modelo}&año=${data.camion.año}&tipo_remolque=${data.camion.tipo_remolque}&activo=${data.camion.activo}`;
+        
+        // Redirigir al formulario de modificación con los datos del camión
+        window.location.href = url;
+    })
+    .catch(error => {
+        console.error('Error al obtener detalles del camion:', error);
+    });
+}
+
+
         function eliminarCamion(patente) {
             // Hacer una solicitud POST para eliminar el chofer
             fetch(`/camiones/${patente}`, {
