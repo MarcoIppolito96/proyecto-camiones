@@ -69,7 +69,7 @@
                 <td>{{ camion[3] }}</td>
                 <td>{{ camion[4] }}</td>
                 <td>
-                    <button class="modify-button" onclick="modificarCamion('{{ camion[0] }}')">Modificar</button>
+                    <button class="modify-button" onclick="modificarCamion('{{ camion[0] }}', '{{ camion[1] }}', '{{ camion[2] }}', '{{ camion[3] }}', '{{ camion[4] }}')" data-idremolque="{{ camion[5] }}">Modificar</button>
                 </td>
                 <td>
                     <button class="delete-button" onclick="eliminarCamion('{{ camion[0] }}')">Eliminar</button>
@@ -80,27 +80,12 @@
     </table>
 
     <script>
-    function modificarCamion(patente) {
-    // Realizar una solicitud PUT para obtener los detalles del camión
-    fetch(`/camiones/${patente}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Construir la URL con parámetros para el formulario de modificación
-        const url = `/agregar_camion?patente=${data.camion.patente}&marca=${data.camion.marca}&modelo=${data.camion.modelo}&año=${data.camion.año}&tipo_remolque=${data.camion.tipo_remolque}&activo=${data.camion.activo}`;
-        
-        // Redirigir al formulario de modificación con los datos del camión
-        window.location.href = url;
-    })
-    .catch(error => {
-        console.error('Error al obtener detalles del camion:', error);
-    });
+    function modificarCamion(patente, marca, modelo, año, id_remolque) {
+    const url = `/agregar_camion?patente=${patente}&marca=${marca}&modelo=${modelo}&año=${año}&id_remolque=${id_remolque}`;
+    window.open(url, '_blank', 'width=400,height=300,resizable=yes,scrollbars=yes');
 }
 
+//const url = `/agregar_camion?patente=${data.camion.patente}&marca=${data.camion.marca}&modelo=${data.camion.modelo}&año=${data.camion.año}&tipo_remolque=${data.camion.tipo_remolque}`;
 
         function eliminarCamion(patente) {
             // Hacer una solicitud POST para eliminar el chofer
@@ -126,24 +111,27 @@
         
         <script>
             document.querySelectorAll('tr').forEach(row => {
-                row.addEventListener('click', function() {
-                    var codigoCamion = this.getAttribute('data-patentecamion');
-                    var camionCampo = localStorage.getItem('camionCampo');
-    
-                    console.log("Se ha hecho clic en la fila");
-                    console.log(camionCampo);
-    
-                    var camionElement = window.opener.document.getElementById(camionCampo);
-    
-                    if (camionElement) {
-                        camionElement.value = codigoCamion;
-                    } else {
-                        console.error("Elemento de camion no encontrado en la ventana principal.");
-                    }
-    
-                    window.close();
-                });
-            });
+    row.addEventListener('click', function() {
+        var codigoCamion = this.getAttribute('data-patentecamion');
+        var idRemolque = this.querySelector('.modify-button').getAttribute('data-idremolque');
+        var camionCampo = localStorage.getItem('camionCampo');
+
+        console.log("Se ha hecho clic en la fila");
+        console.log(codigoCamion);
+        console.log(idRemolque);
+
+        var camionElement = window.opener.document.getElementById(camionCampo);
+
+        if (camionElement) {
+            camionElement.value = codigoCamion;
+            // También puedes asignar idRemolque a otro campo oculto si lo necesitas
+        } else {
+            console.error("Elemento de camion no encontrado en la ventana principal.");
+        }
+
+        window.close();
+    });
+});
         </script>
 </body>
 </html>

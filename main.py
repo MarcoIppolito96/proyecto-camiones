@@ -13,11 +13,11 @@ templates = Jinja2Templates(directory="templates")
 app = FastAPI()
 
 connection_params = {
-    'user': 'postgres',
-    'password': 'markito21nob',
-    'host': 'localhost',  # O el host de tu base de datos
+    'user': 'proyectocamionesdb_user',
+    'password': '207eAz2s9dbXHpwZEXTGZBawmKfuPqXg',
+    'host': 'dpg-cmts7picn0vc73bherm0-a',  # O el host de tu base de datos
     'port': '5432',  # O el puerto que estás utilizando
-    'database': 'speedygonzales'
+    'database': 'proyectocamionesdb'
 }
 
 conn = psycopg2.connect(**connection_params)
@@ -78,25 +78,33 @@ def eliminarCamion(patente):
         raise HTTPException(status_code=500, detail="Error interno del servidor")
     
 @app.put("/camiones/{patente}")
-def obtener_detalle_camion(patente: str):
+def modificar_camion(patente: str, nuevo_camion: Camion, request: Request):
     try:
         with conn.cursor() as cursor:
-            query = """SELECT patente, marca, modelo, aÑo, tipo_remolque, activo
-                       FROM public.camiones
-                       WHERE patente = %s;"""
-            cursor.execute(query, (patente,))
-            camion = cursor.fetchone()
+            # Verificar si el camión existe
+            query_buscar_camion = f"SELECT * FROM camiones WHERE patente = '{patente}'"
+            cursor.execute(query_buscar_camion)
+            camion_existente = cursor.fetchone()
 
-            if camion:
-                # Retorna los detalles del camión como respuesta JSON
-                return JSONResponse(content={"camion": dict(camion)})
-            else:
-                # Si no se encuentra el camión, retorna una respuesta 404 Not Found
-                raise HTTPException(status_code=404, detail=f"Camión con patente {patente} no encontrado")
+            if not camion_existente:
+                raise HTTPException(status_code=404, detail="Camión no encontrado")
+
+            # Imprime los datos antes de ejecutar la consulta
+            print(nuevo_camion)
+            print(nuevo_camion.dict())
+
+            # Actualizar la información del camión
+            query_modificar_camion = """
+                UPDATE camiones
+                SET marca = %s, modelo = %s, aÑo = %s, tipo_remolque = %s
+                WHERE patente = %s;
+            """
+            cursor.execute(query_modificar_camion, (nuevo_camion.marca, nuevo_camion.modelo, nuevo_camion.año, nuevo_camion.tipo_remolque, patente))
+            conn.commit()
+            return JSONResponse(content={"mensaje": "Camion modificado correctamente"})
     except Exception as e:
-        print(f"Error al obtener datos de la base de datos: {str(e)}")
+        print(f"Error al modificar el camión en la base de datos: {str(e)}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
-
 
 @app.get("/choferes")
 def obtener_choferes(request: Request):
