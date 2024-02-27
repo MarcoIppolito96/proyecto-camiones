@@ -6,11 +6,13 @@ TELEFONO_FIJO varchar(25) NULL,
 TELEFONO_CELULAR varchar(25),
 EDAD integer,
 email char(50),
-REGISTRO_AUTOMOTOR varchar(20));
+REGISTRO_AUTOMOTOR varchar(20)),
+ACTIVO boolean NULL;
 
 CREATE TABLE remolques (
     id SERIAL PRIMARY KEY,
-    DESCRIPCION varchar(60));
+    DESCRIPCION varchar(60)),
+    ACTIVO boolean NULL;
 
 CREATE TABLE camiones (
     PATENTE varchar(10) PRIMARY KEY,
@@ -18,7 +20,8 @@ CREATE TABLE camiones (
     MODELO varchar(30),
     AÑO int,
     TIPO_REMOLQUE integer,
-    FOREIGN KEY(TIPO_REMOLQUE) REFERENCES remolques(ID)
+    FOREIGN KEY(TIPO_REMOLQUE) REFERENCES remolques(ID),
+    ACTIVO boolean NULL
 );
 
 CREATE TABLE choferes_camiones (
@@ -45,7 +48,8 @@ CREATE TABLE clientes (
   CHECK (
     (ES_EMPRESA = FALSE) OR
     (ES_EMPRESA = TRUE AND RAZON_SOCIAL IS NOT NULL AND CUIT IS NOT NULL)
-  )
+  ),
+  ACTIVO boolean NULL
 );
 
 

@@ -6,31 +6,32 @@ from models import *
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from pydantic.error_wrappers import ValidationError
+import os
 
 templates = Jinja2Templates(directory="templates")
 
 ######## CONEXIONES #########
 app = FastAPI()
 
-connection_params = {
-    'user': 'proyectocamionesdb_user',
-    'password': '207eAz2s9dbXHpwZEXTGZBawmKfuPqXg',
-    'host': 'dpg-cmts7picn0vc73bherm0-a',  # O el host de tu base de datos
-    'port': '5432',  # O el puerto que estás utilizando
-    'database': 'proyectocamionesdb'
-}
+# INTERNO 
+try:
+    connection_params = {
+        'user': 'proyectocamionesdb_user',
+        'password':  '207eAz2s9dbXHpwZEXTGZBawmKfuPqXg',
+        'host': 'dpg-cmts7picn0vc73bherm0-a.ohio-postgres.render.com',  
+        'port': '5432',  
+        'database': 'proyectocamionesdb'
+    }
+    conn = psycopg2.connect(**connection_params)
+    cursor = conn.cursor()
+    print("Conexion exitosa")
+except Exception as e:
+    print(f"Error al conectaaar: {str(e)}")
 
-conn = psycopg2.connect(**connection_params)
-cursor = conn.cursor()
+#conn = psycopg2.connect(**connection_params)
 
-"""
-query = "SELECT * FROM camiones;"
-cursor.execute(query)
+# EXTERNO
 
-# Recupera los resultados, por ejemplo:
-results = cursor.fetchall()
-print(results)
-"""
 
 #########
 
@@ -193,6 +194,24 @@ def obtener_clientes(request: Request):
         clientes = cursor.fetchall()
     return templates.TemplateResponse("clientes.html", {"request": request, "clientes": clientes})
 
+@app.get("/agregar_cliente")
+def agregar_cliente(request: Request):
+    return templates.TemplateResponse("agregarcliente.html",{"request" : request})
+
+@app.post("agregar_cliente")
+def agrego_cliente(cliente: Cliente):
+    try:
+        with conn.cursor() as cursor:
+            query = """INSERT INTO clientes(
+	        nombre, apellido, razon_social, dni, cuit, direccion, telefono, email, es_empresa, activo)
+	        VALUES (%(nombre)s %(apellido)s %(razon_social)s %(dni)s %(cuit)s %(direccion)s %(telefono)s %(email)s);"""
+            cursor.execute(query, cliente.dict)
+            conn.commit()
+        return JSONResponse(content={"mensaje": "Cliente agregado correctamente"})
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return JSONResponse(content={"mensaje": "Error interno del servidor"}, status_code=500)
+    
 @app.post("/clientes/{codigo}")
 def eliminar_cliente(codigo):
     try:

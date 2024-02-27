@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Cliente</title>
+</head>
+<body>
+    {% include "header.html" %}
+    <h2>Formulario de Cliente</h2>
+
+    <form id="clienteForm">
+        <label for="esempresa">Es empresa?</label>
+        <input type="checkbox" id="esempresa" name="esempresa" required><br>
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+
+        <label for="apellido">Apellido:</label>
+        <input type="text" id="apellido" name="apellido"><br>
+
+        <label for="razonsocial">Razon Social:</label>
+        <input type="text" id="razonsocial" name="razonsocial"><br>
+
+        <label for="dni">Dni:</label>
+        <input type="text" id="dni" name="dni"><br>
+
+        <label for="cuit">Cuit:</label>
+        <input type="text" id="cuit" name="cuit"><br>
+
+        <label for="direccion">Direccion:</label>
+        <input type="text" id="direccion" name="direccion" required><br>
+
+        <label for="telefono">Telefono:</label>
+        <input type="text" id="telefono" name="telefono" required><br>
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required><br>
+
+        <input type="submit" value="Agregar Cliente" onclick="enviarDatos()">
+    </form>
+
+    <p id="mensaje"></p>
+
+    <script>
+        document.getElementById("clienteForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Evitar el envío del formulario tradicional
+
+    var form = document.getElementById("clienteForm");
+    var formData = new FormData(form);
+    var jsonData = {};
+
+    formData.forEach(function(value, key) {
+        jsonData[key] = value;
+    });
+
+    fetch('/agregar_cliente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Error en la respuesta del servidor');
+        }
+    })
+    .then(data => {
+        // Actualizar el mensaje en el HTML
+        var mensajeElement = document.getElementById("mensaje");
+        mensajeElement.innerHTML = data.mensaje;
+
+        // Si el mensaje es "Usuario agregado correctamente", redirigir a la página de choferes
+        if (data.mensaje === "Cliente agregado correctamente") {
+            setTimeout(function() {
+                window.location.href = "/clientes";
+            }, 3000); // Esperar 1 segundo antes de redirigir
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Mostrar un mensaje de error en caso de fallo
+        var mensajeElement = document.getElementById("mensaje");
+        mensajeElement.innerHTML = "Hubo un error al procesar la solicitud.";
+    });
+});
+</script>
+    </script>
+</body>
+</html>

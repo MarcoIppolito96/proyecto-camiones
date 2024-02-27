@@ -12,6 +12,16 @@ class Chofer(BaseModel):
     email: str
     registro_automotor: str
 
+class Cliente(BaseModel):
+    nombre: str
+    apellido: str
+    razonsocial: str
+    dni: str
+    cuit: str
+    direccion: str
+    telefono: str
+    email: str
+
 class Camion(BaseModel):
     patente: str
     marca: str
