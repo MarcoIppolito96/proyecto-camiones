@@ -13,14 +13,15 @@ templates = Jinja2Templates(directory="templates")
 ######## CONEXIONES #########
 app = FastAPI()
 
-# INTERNO 
+# EXTERNO 
+
 try:
     connection_params = {
         'user': 'camionesonline_user',
         'password':  'GdiALbTeSjFSvUGzLShc0YGgQmjFzGaS',
         'host': 'dpg-cnj5vcf79t8c73cq1mpg-a.oregon-postgres.render.com',  
         'port': '5432',  
-        'database': 'camionesonline'
+        'database': 'camionesonline2'
     }
     conn = psycopg2.connect(**connection_params)
     cursor = conn.cursor()
@@ -30,8 +31,21 @@ except Exception as e:
 
 #conn = psycopg2.connect(**connection_params)
 
-# EXTERNO
-
+# INTERNO
+"""
+try:
+    connection_params = {
+        'user': 'postgres',
+        'password':  'markito21',
+        'host': 'localhost',  
+        'port': '5432',  
+        'database': 'camionesLocal'
+    }
+    conn = psycopg2.connect(**connection_params)
+    cursor = conn.cursor()
+    print("Conexion exitosa")
+except Exception as e:
+    print(f"Error al conectaaar: {str(e)}")"""
 
 #########
 
@@ -54,27 +68,46 @@ def login(usuario: Usuario):
             cursor.execute(query)
             usuarioDB = cursor.fetchone()
             print(usuarioDB)
-            cont = 0
             if usuarioDB:
-                if usuario.contrasena == usuarioDB[3]:
-                    return RedirectResponse(url=f"/inicio?usuario={usuario.nombre}", status_code=302)
+                if usuarioDB[4]:
+                    if usuario.contrasena == usuarioDB[3]:
+                        return JSONResponse(content={"redirect_url": f"/inicio?usuario={usuario.nombre}"})
+                    else:
+                        with conn.cursor() as cursor:
+                            id = usuarioDB[0]
+                            query1 = f""" UPDATE usuarios
+                                        SET intentos = intentos + 1
+                                        WHERE id = '{id}';"""
+                            cursor.execute(query1)
+                            conn.commit()
+                            query2 = f"""SELECT intentos FROM usuarios WHERE usuarios.nombre = '{usuario.nombre}'"""
+                            cursor.execute(query2)
+                            usuario = cursor.fetchone()
+                            intentosUsuario = usuario[0]
+                            if intentosUsuario == 1:
+                                return JSONResponse(content={"mensaje": f"Le quedan 2 intentos"})
+                            elif intentosUsuario == 2:
+                                return JSONResponse(content={"mensaje": f"Le queda 1 intento"})
+                            elif intentosUsuario >= 3:
+                                query4 = f""" UPDATE usuarios
+                                        SET activo = False
+                                        WHERE id = '{id}';"""
+                                cursor.execute(query4)
+                                conn.commit() 
+                            return JSONResponse(content={"mensaje": f"Se ha bloqueado al usuario por superar la cantidad de intentos."})
                 else:
-                    while usuario.contrasena != usuarioDB[3] and cont < 3:
-                        cont += 1
-                        print(cont)
-                        raise HTTPException(status_code=401, detail=f"Te quedan {3 - cont} oportunidades")
-                    if cont >= 3:
-                        raise HTTPException(status_code=401, detail="Has excedido el número máximo de intentos.")
+                    return JSONResponse(content={"mensaje": "El usuario esta bloqueado, comuniquese con el administrador para desbloquearlo."})
             else:
                 print("Che es none, no se encontró el usuario")
-                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+                return JSONResponse(content={"mensaje": "No se encontró el usuario"})
     except Exception as e:
         print(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
     
 @app.get("/inicio")
 def inicio(request: Request):
-    return templates.TemplateResponse("inicio.html", {"request": request})
+    nombre_usuario = request.query_params.get('usuario', '')
+    return templates.TemplateResponse("inicio.html", {"request": request, "nombre_usuario": nombre_usuario})
 
 @app.get("/camiones")
 def obtener_camiones(request: Request):

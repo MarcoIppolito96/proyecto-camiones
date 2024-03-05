@@ -3,7 +3,8 @@ CREATE TABLE usuarios(
     NOMBRE varchar(25),
     EMAIL varchar(50),
     CONTRASENA varchar(30),
-    ACTIVO boolean DEFAULT TRUE
+    ACTIVO boolean DEFAULT TRUE,
+    INTENTOS integer DEFAULT 0
 );
 
 CREATE TABLE registro_auditoria (

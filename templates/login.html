@@ -80,7 +80,7 @@
             const nombre = document.getElementById('nombre').value;
             const contrasena = document.getElementById('contrasena').value;
             const formData = { nombre, contrasena };
-
+    
             fetch('/', {
                 method: 'POST',
                 headers: {
@@ -89,24 +89,25 @@
                 body: JSON.stringify(formData)
             })
             .then(response => {
-                if (response.status === 401) {
-                    // La contraseña es incorrecta, mostrar mensaje de oportunidades restantes
-                    response.json().then(data => {
-                        document.getElementById('mensaje').innerText = data.detail;
-                    });
-                } else if (!response.ok) {
-                    // Otro tipo de error, mostrar mensaje de error genérico
+                if (!response.ok) {
                     throw new Error('Error en la solicitud');
                 } else {
-                    // La solicitud fue exitosa, redirigir a la página de inicio
-                    window.location.href = '/inicio';
+                    response.json().then(data => {
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        } else {
+                            var mensajeElement = document.getElementById("mensaje");
+                            mensajeElement.innerHTML = data.mensaje;
+                        }
+                    }).catch(error => {
+                        console.error('Error al procesar los datos JSON:', error);
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
         }
-        
     </script>
 
 </body>

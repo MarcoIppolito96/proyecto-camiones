@@ -11,6 +11,11 @@
         }
         h1 {
             margin-bottom: 20px;
+            display: inline-block; /* Para que el nombre de usuario se alinee correctamente */
+        }
+        #nombre-usuario {
+            display: inline-block; /* Para que el nombre de usuario se alinee correctamente */
+            float: right; /* Para alinear el nombre de usuario a la derecha */
         }
         .button-container {
             display: flex;
@@ -66,7 +71,7 @@
     // Mostrar el nombre de usuario en algún elemento HTML
     const elementoNombreUsuario = document.getElementById('nombre-usuario');
     if (nombreUsuario) {
-        elementoNombreUsuario.innerText = nombreUsuario;
+        elementoNombreUsuario.innerText = "usuario: " + nombreUsuario;
     } else {
         elementoNombreUsuario.innerText = 'Usuario no encontrado';
     }
