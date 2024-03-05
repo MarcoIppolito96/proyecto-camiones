@@ -44,16 +44,7 @@ class Viajes(BaseModel):
 class Remolques(BaseModel):
     nombre: str
 
-class Producto(BaseModel):
-    codigo: str
-    descripcion: str
-    importeUnitario: float
-
-class Factura(BaseModel):
-    numero: int
-    fecha: date
-    productos: list[Producto]
-    subtotal: float
-    valorIva: float
-    total: float
-
+class Usuario(BaseModel):
+    nombre: str
+    email: str = None
+    contrasena: str

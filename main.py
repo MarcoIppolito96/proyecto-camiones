@@ -16,11 +16,11 @@ app = FastAPI()
 # INTERNO 
 try:
     connection_params = {
-        'user': 'proyectocamionesdb_user',
-        'password':  '207eAz2s9dbXHpwZEXTGZBawmKfuPqXg',
-        'host': 'dpg-cmts7picn0vc73bherm0-a.ohio-postgres.render.com',  
+        'user': 'camionesonline_user',
+        'password':  'GdiALbTeSjFSvUGzLShc0YGgQmjFzGaS',
+        'host': 'dpg-cnj5vcf79t8c73cq1mpg-a.oregon-postgres.render.com',  
         'port': '5432',  
-        'database': 'proyectocamionesdb'
+        'database': 'camionesonline'
     }
     conn = psycopg2.connect(**connection_params)
     cursor = conn.cursor()
@@ -39,7 +39,40 @@ app.mount("/templates", StaticFiles(directory="templates"), name="templates")
 
 ## RUTAS ##
 
+# Ruta para la página de inicio de sesión
 @app.get("/")
+def inicio(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+# Ruta para manejar el inicio de sesión
+@app.post("/")
+def login(usuario: Usuario):
+    try:
+        with conn.cursor() as cursor:
+            print(f"Usuario: {usuario}")
+            query = f"""SELECT * FROM usuarios WHERE usuarios.nombre = '{usuario.nombre}'"""
+            cursor.execute(query)
+            usuarioDB = cursor.fetchone()
+            print(usuarioDB)
+            cont = 0
+            if usuarioDB:
+                if usuario.contrasena == usuarioDB[3]:
+                    return RedirectResponse(url=f"/inicio?usuario={usuario.nombre}", status_code=302)
+                else:
+                    while usuario.contrasena != usuarioDB[3] and cont < 3:
+                        cont += 1
+                        print(cont)
+                        raise HTTPException(status_code=401, detail=f"Te quedan {3 - cont} oportunidades")
+                    if cont >= 3:
+                        raise HTTPException(status_code=401, detail="Has excedido el número máximo de intentos.")
+            else:
+                print("Che es none, no se encontró el usuario")
+                raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
+    
+@app.get("/inicio")
 def inicio(request: Request):
     return templates.TemplateResponse("inicio.html", {"request": request})
 

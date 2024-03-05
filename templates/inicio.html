@@ -43,7 +43,7 @@
 </head>
 <body>
     <h1>INICIO</h1>
-
+    <p id="nombre-usuario"></p>
     <div class="button-container">
         <a href="/clientes" class="button">CLIENTES</a>
         <a href="/choferes" class="button">CHOFERES</a>
@@ -54,6 +54,22 @@
     <div class="button-container">
         <a href="/viajes" class="button2">VIAJES</a>
     </div>
+<script>
+    function obtenerParametro(nombre) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(nombre) || '';
+    }
 
+    // Obtener el nombre de usuario de la URL
+    const nombreUsuario = obtenerParametro('usuario');
+
+    // Mostrar el nombre de usuario en algún elemento HTML
+    const elementoNombreUsuario = document.getElementById('nombre-usuario');
+    if (nombreUsuario) {
+        elementoNombreUsuario.innerText = nombreUsuario;
+    } else {
+        elementoNombreUsuario.innerText = 'Usuario no encontrado';
+    }
+</script>
 </body>
 </html>
